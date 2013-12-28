@@ -7,7 +7,7 @@ void testApp::setup(){
 
 	lastBrightness = 0;
 	ofBackground(22);
-	ofSetFrameRate(30); //ghetto limit for the api call rate
+	ofSetFrameRate(60); //ghetto limit for the api call rate
 
 	hue.setup("192.168.1.200", "2d5ff43c38ba7ecf1bc852143f75647");
 }
@@ -17,12 +17,13 @@ void testApp::draw(){
 
 	//background
 	ofColor c = ofColor::white;
-	c.setHsb(255 * lastHue, 255 * 1.0, 255 * lastBrightness);
+	c.setHsb(255 * lastHue, 255, 255 * lastBrightness);
 	ofSetColor(c);
 	ofRect(0, 0, ofGetWidth(), ofGetHeight());
 
 	//current color
-	c.setHsb(255 * ofMap(mouseX, 0, ofGetWidth(), 0, 1, true),
+	c.setHsb(
+			 255 * ofMap(mouseX, 0, ofGetWidth(), 0, 1, true),
 			 255,
 			 255 * ofMap(mouseY, 0, ofGetHeight(), 1, 0, true)
 			 );
