@@ -13,9 +13,10 @@ class testApp : public ofBaseApp{
 		void draw();
 
 		void keyPressed(int key);
-		void mouseMoved( int x, int y );
+		void mousePressed( int x, int y, int button );
 
 		ofxPhilipsHue hue;
+		float lastHue, lastBrightness;
 };
 
 #endif
