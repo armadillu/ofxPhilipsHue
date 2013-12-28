@@ -15,7 +15,7 @@ class testApp : public ofBaseApp{
 		void keyPressed(int key);
 		void mouseMoved( int x, int y );
 
-	ofxPhilipsHue hue;
+		ofxPhilipsHue hue;
 };
 
 #endif

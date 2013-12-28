@@ -6,8 +6,7 @@ int lightID = 3; //see hue API docs for this
 void testApp::setup(){
 
 	ofBackground(22);
-	ofSetVerticalSync(true);
-	ofSetFrameRate(10); //ghetto limit for the api call fps
+	ofSetFrameRate(2); //ghetto limit for the api call rate
 
 	hue.setup("192.168.1.200", "2d5ff43c38ba7ecf1bc852143f75647");
 }
@@ -24,11 +23,16 @@ void testApp::keyPressed(int key){
 }
 
 void testApp::mouseMoved( int x, int y ){
-	hue.setLightState(	lightID,
-						true,											//on-off
-						ofMap(mouseY, 0, ofGetHeight(), 1, 0, true),	//brightness
-						1.0,											//sat
-						ofMap(mouseX, 0, ofGetWidth(), 0, 1, true),		//hue
-						0												//transition duration
+
+	float newBrightness = ofMap(mouseY, 0, ofGetHeight(), 1, 0, true);
+	float newHue = ofMap(mouseX, 0, ofGetWidth(), 0, 1, true);
+
+	hue.setLightState(
+						lightID,		//light bulb ID #
+						true,			//on-off
+						newBrightness,	//brightness
+						1.0,			//sat
+						newHue,			//hue
+						300				//transition duration in ms
 					  );
 }

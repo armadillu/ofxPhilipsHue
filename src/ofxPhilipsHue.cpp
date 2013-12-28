@@ -22,11 +22,11 @@ void ofxPhilipsHue::setup(string bridgeIP, string userName){
 void ofxPhilipsHue::setLightState(int lightID, bool state, float brightness, float saturation, float hue, int transitionDuration){
 
 	if (bridge.length() == 0 || apiUser.length() == 0){
-		cout << "you need to setup first!" << endl;
+		cout << "ofxPhilipsHue::setLightState(); Can't set Light State! You need to setup first!" << endl;
 		return;
 	}
 
-	float timeOut = 3.0; //seconds
+	float timeOut = 1.0; //seconds
 	Poco::URI uri = Poco::URI( "http://" + bridge + "/api/" + apiUser +"/lights/" + ofToString(lightID) + "/state" );
 
 	//build json data
@@ -47,19 +47,17 @@ void ofxPhilipsHue::setLightState(int lightID, bool state, float brightness, flo
 
 	json += string(" , ") + "\"transitiontime\":" + ofToString( int(transitionDuration / 100) );
 
-
 	json += " }";
 
-
-	cout << json << endl;
+	//cout << json << endl;
 
 	try{
 		std::string path(uri.getPathAndQuery());
 		if (path.empty()) path = "/";
 		string host = uri.getHost();
 
-		cout << "http://" + host << "/" << path << endl;
-		cout << json << endl << endl;
+		//cout << "http://" + host << "/" << path << endl;
+		//cout << json << endl << endl;
 
 		HTTPClientSession session( host, uri.getPort() );
 		HTTPRequest req(HTTPRequest::HTTP_PUT, path, HTTPMessage::HTTP_1_1);
@@ -77,9 +75,9 @@ void ofxPhilipsHue::setLightState(int lightID, bool state, float brightness, flo
 		istream& rs = session.receiveResponse(res);
 		string responseBody = "";
 		StreamCopier::copyToString(rs, responseBody);	//copy the data...
-		cout << "response : " << responseBody << endl;
+		cout << ">> Response : " << responseBody << endl << endl;
 
 	}catch(Exception& exc){
-		ofLog( OF_LOG_ERROR, "HttpFormManager::executeForm(%s) >> Exception: %s\n", uri.toString().c_str(), exc.displayText().c_str() );
+		ofLog( OF_LOG_ERROR, "ofxPhilipsHue::setLightState(%s) >> Exception: %s\n", uri.toString().c_str(), exc.displayText().c_str() );
 	}
 }
