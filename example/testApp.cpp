@@ -1,13 +1,14 @@
 #include "testApp.h"
 
 bool state = false; //on / off
-int lightID = 3; //see hue API docs for this
+int numLights = 3;
 
 void testApp::setup(){
 
 	lastBrightness = 0;
 	ofBackground(22);
 	ofSetFrameRate(60); //ghetto limit for the api call rate
+	ofSetWindowTitle("ofxPhilipsHue");
 
 	hue.setup("192.168.1.200", "2d5ff43c38ba7ecf1bc852143f75647");
 }
@@ -42,7 +43,10 @@ void testApp::draw(){
 
 void testApp::keyPressed(int key){
 	state = !state;
-	hue.setLightState(lightID, state);
+	for(int i = 1; i <= numLights; i++){
+		hue.setLightState(i, state);
+	}
+
 }
 
 void testApp::mousePressed( int x, int y, int button ){
@@ -50,12 +54,14 @@ void testApp::mousePressed( int x, int y, int button ){
 	lastBrightness = ofMap(mouseY, 0, ofGetHeight(), 1, 0, true);
 	lastHue = ofMap(mouseX, 0, ofGetWidth(), 0, 1, true);
 
-	hue.setLightState(
-						lightID,		//light bulb ID #
+	for(int i = 1; i <= numLights; i++){
+		hue.setLightState(
+						i,		//light bulb ID #
 						true,			//on-off
 						lastBrightness,	//brightness
 						1.0,			//sat
 						lastHue,		//hue
 						300				//transition duration in ms
 					  );
+	}
 }
