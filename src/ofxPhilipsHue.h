@@ -49,6 +49,12 @@ public:
 					   int transitionDuration = 0/*ms*/
 	);
 
+	void setLightState(	int lightID,
+					   bool state,
+					   ofColor color,
+					   int transitionDuration = 0/*ms*/
+	);
+
 
 private:
 

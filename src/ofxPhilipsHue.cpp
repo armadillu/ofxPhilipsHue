@@ -19,6 +19,16 @@ void ofxPhilipsHue::setup(string bridgeIP, string userName){
 	apiUser = userName;
 }
 
+void ofxPhilipsHue::setLightState(int lightID, bool state, ofColor c, int transitionDuration){
+
+	float h = c.getHue() / 255.;
+	float s = c.getSaturation() / 255.;
+	float b = c.getBrightness() / 255.;
+
+	setLightState( lightID, state, b, s, h, transitionDuration );
+}
+
+
 void ofxPhilipsHue::setLightState(int lightID, bool state, float brightness, float saturation, float hue, int transitionDuration){
 
 	if (bridge.length() == 0 || apiUser.length() == 0){
