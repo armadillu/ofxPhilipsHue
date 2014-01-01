@@ -55,9 +55,12 @@ public:
 					   int transitionDuration = 0/*ms*/
 	);
 
+	void blinkLightOnce(int lightID);
+
 
 private:
 
+	bool sendCommand(int lightID, string json);
 	string bridge;
 	string apiUser;
 	

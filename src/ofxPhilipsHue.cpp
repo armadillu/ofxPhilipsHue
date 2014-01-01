@@ -31,16 +31,7 @@ void ofxPhilipsHue::setLightState(int lightID, bool state, ofColor c, int transi
 
 void ofxPhilipsHue::setLightState(int lightID, bool state, float brightness, float saturation, float hue, int transitionDuration){
 
-	if (bridge.length() == 0 || apiUser.length() == 0){
-		cout << "ofxPhilipsHue::setLightState(); Can't set Light State! You need to setup first!" << endl;
-		return;
-	}
-
-	float timeOut = 1.0; //seconds
-	Poco::URI uri = Poco::URI( "http://" + bridge + "/api/" + apiUser +"/lights/" + ofToString(lightID) + "/state" );
-
 	//build json data
-
 	string json = "{ \"on\":" + string( state ? "true" : "false");
 
 	if (brightness >= 0.0 && brightness <= 1.0){
@@ -61,13 +52,34 @@ void ofxPhilipsHue::setLightState(int lightID, bool state, float brightness, flo
 
 	//cout << json << endl;
 
-	try{
-		std::string path(uri.getPathAndQuery());
-		if (path.empty()) path = "/";
-		string host = uri.getHost();
+	sendCommand(lightID, json);
 
-		//cout << "http://" + host << "/" << path << endl;
-		//cout << json << endl << endl;
+}
+
+void ofxPhilipsHue::blinkLightOnce(int lightID){
+
+	//build json data
+	string json = "{ \"on\":true, \"alert\":\"select\" }";
+	//cout << json << endl;
+
+	sendCommand(lightID, json);
+}
+
+bool ofxPhilipsHue::sendCommand(int lightID, string json){
+
+	if (bridge.length() == 0 || apiUser.length() == 0){
+		cout << "ofxPhilipsHue::setLightState(); Can't set Light State! You need to setup first!" << endl;
+		return;
+	}
+
+	float timeOut = 1.0; //seconds
+	Poco::URI uri = Poco::URI( "http://" + bridge + "/api/" + apiUser +"/lights/" + ofToString(lightID) + "/state" );
+	std::string path(uri.getPathAndQuery());
+	if (path.empty()) path = "/";
+	string host = uri.getHost();
+
+
+	try{
 
 		HTTPClientSession session( host, uri.getPort() );
 		HTTPRequest req(HTTPRequest::HTTP_PUT, path, HTTPMessage::HTTP_1_1);
@@ -85,9 +97,11 @@ void ofxPhilipsHue::setLightState(int lightID, bool state, float brightness, flo
 		istream& rs = session.receiveResponse(res);
 		string responseBody = "";
 		StreamCopier::copyToString(rs, responseBody);	//copy the data...
-		cout << ">> Response : " << responseBody << endl << endl;
-
+		cout << "ofxPhilipsHue >> Response : " << responseBody << endl << endl;
+		return true;
 	}catch(Exception& exc){
-		ofLog( OF_LOG_ERROR, "ofxPhilipsHue::setLightState(%s) >> Exception: %s\n", uri.toString().c_str(), exc.displayText().c_str() );
+		ofLog( OF_LOG_ERROR, "ofxPhilipsHue::sendCommand(%s) to %s >> Exception: %s\n", json.c_str(), uri.toString().c_str(), exc.displayText().c_str() );
+		return false;
 	}
+
 }
