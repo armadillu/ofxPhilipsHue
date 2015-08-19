@@ -23,12 +23,34 @@
 #include "Poco/Mutex.h"
 #include "Poco/Net/FilePartSource.h"
 
+#include "ofxJsonxx.h"
+
 using namespace Poco::Net;
 using namespace Poco;
 using Poco::Exception;
 using Poco::Net::HTTPClientSession;
 
 
+typedef struct {
+	int id;
+	string name;
+	bool on;
+	int brightness;
+	int hue;
+	int saturation;
+} ofxPhilipsHueLight;
+
+typedef struct{
+	int id;
+	string name;
+	
+	bool on;
+	int brightness;
+	int hue;
+	int saturation;
+
+	vector<int> lightsId;
+} ofxPhilipsHueGroup;
 
 class ofxPhilipsHue{
 
@@ -56,7 +78,17 @@ public:
 	);
 
 	void blinkLightOnce(int lightID);
-
+	
+	void setGroupState(int groupId,
+					   bool state,
+					   float brightness = -1.0,
+					   float saturation = -1.0,
+					   float hue = -1.0,
+					   int transitionDuration = 0/*ms*/
+	);
+	
+	vector<ofxPhilipsHueLight> getLights();
+	vector<ofxPhilipsHueGroup> getGroups();
 
 private:
 
@@ -65,13 +97,12 @@ private:
 	string apiUser;
 	
 	
-	bool sendGetCommand(	string uri, string json="");
-	bool sendPutCommans(	string uri, string json="");
-	bool sendPostCommand(	string uri, string json="");
-	bool sendDeleteCommand(	string uri, string json="");
+	string sendGetCommand(	string uri, string json="");
+	string sendPutCommand(	string uri, string json="");
+	string sendPostCommand(	string uri, string json="");
+	string sendDeleteCommand(	string uri, string json="");
 	
-	bool sendRequest(string requestType, string uri, string json="");
-	
+	string sendRequest(string requestType, string uri, string json="");
 };
 
 
