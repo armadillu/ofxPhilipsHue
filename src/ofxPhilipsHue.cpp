@@ -68,7 +68,7 @@ void ofxPhilipsHue::blinkLightOnce(int lightID){
 bool ofxPhilipsHue::sendCommand(int lightID, string json){
 
 	if (bridge.length() == 0 || apiUser.length() == 0){
-		cout << "ofxPhilipsHue::setLightState(); Can't set Light State! You need to setup first!" << endl;
+		ofLogError("ofxPhilipsHue") << "setLightState(); Can't set Light State! You need to setup first!";
 		return;
 	}
 
@@ -97,11 +97,54 @@ bool ofxPhilipsHue::sendCommand(int lightID, string json){
 		istream& rs = session.receiveResponse(res);
 		string responseBody = "";
 		StreamCopier::copyToString(rs, responseBody);	//copy the data...
-		cout << "ofxPhilipsHue >> Response : " << responseBody << endl << endl;
+		ofLogVerbose("ofxPhilipsHue") << "Response : " << responseBody;
 		return true;
 	}catch(Exception& exc){
 		ofLog( OF_LOG_ERROR, "ofxPhilipsHue::sendCommand(%s) to %s >> Exception: %s\n", json.c_str(), uri.toString().c_str(), exc.displayText().c_str() );
 		return false;
 	}
 
+}
+
+bool ofxPhilipsHue::sendGetCommand(string uri, string json){
+	return sendRequest(HTTPRequest::httP_GET, uri, json);
+
+}
+
+bool ofxPhilipsHue::sendRequest(string requestType, string uri, string json){
+	if (bridge.length() == 0 || apiUser.length() == 0){
+		ofLogError("ofxPhilipsHue") << "setLightState(); Can't set Light State! You need to setup first!";
+		return;
+	}
+	float timeOut = 1.0; //seconds
+	Poco::URI uri_ = Poco::URI( "http://" + bridge + "/api/" + apiUser +"/lights/" + ofToString(lightID) + "/state" );
+	std::string path(uri.getPathAndQuery());
+	if (path.empty()) path = "/";
+	string host = uri.getHost();
+	
+	
+	try{
+		
+		HTTPClientSession session( host, uri.getPort() );
+		HTTPRequest req(requestType, path, HTTPMessage::HTTP_1_1);
+		
+		session.setTimeout( Poco::Timespan(timeOut,0) );
+		req.set( "User-Agent", "ofxPhilipsHue");
+		req.setContentLength( json.length() );
+		
+		std::ostream& os = session.sendRequest(req);
+		std::istringstream is( json );
+		Poco::StreamCopier::copyStream(is, os);
+		req.setContentLength( json.length() );
+		
+		Poco::Net::HTTPResponse res;
+		istream& rs = session.receiveResponse(res);
+		string responseBody = "";
+		StreamCopier::copyToString(rs, responseBody);	//copy the data...
+		ofLogVerbose("ofxPhilipsHue") << "Response : " << responseBody;
+		return true;
+	}catch(Exception& exc){
+		ofLog( OF_LOG_ERROR, "ofxPhilipsHue::sendCommand(%s) to %s >> Exception: %s\n", json.c_str(), uri.toString().c_str(), exc.displayText().c_str() );
+		return false;
+	}
 }

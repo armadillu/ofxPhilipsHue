@@ -64,6 +64,14 @@ private:
 	string bridge;
 	string apiUser;
 	
+	
+	bool sendGetCommand(	string uri, string json="");
+	bool sendPutCommans(	string uri, string json="");
+	bool sendPostCommand(	string uri, string json="");
+	bool sendDeleteCommand(	string uri, string json="");
+	
+	bool sendRequest(string requestType, string uri, string json="");
+	
 };
 
 
